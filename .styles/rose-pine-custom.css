@@ -1,0 +1,25 @@
+/* @theme rose-pine-custom */
+
+@import-theme 'rose-pine';
+
+:root {
+    font-family: 'Avenir', 'UDEV Gothic 35NFLG';
+}
+
+code, pre {
+    font-family: 'UDEV Gothic 35NFLG';
+}
+
+ul, li {
+    color: var(--text);
+}
+
+li > ul {
+    font-size: 85%;
+}
+
+h2:has(+h3) {
+    font-size: 60%;
+    color: var(--muted)
+}
+
