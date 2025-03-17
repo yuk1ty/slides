@@ -1,0 +1,179 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+// HINT: See also -Z dump-mir for MIR at specific points during compilation.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<i32>;
+    let mut _2: std::boxed::Box<[i32]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[i32; 10]>;
+    let mut _8: std::vec::IntoIter<i32>;
+    let mut _10: std::option::Option<i32>;
+    let mut _11: &mut std::vec::IntoIter<i32>;
+    let mut _12: isize;
+    let mut _14: (i32, bool);
+    let mut _15: (&i32, &i32);
+    let mut _16: &i32;
+    let mut _17: &i32;
+    let mut _20: bool;
+    let mut _21: i32;
+    let mut _22: i32;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _26: *const [i32; 10];
+    let mut _27: *const ();
+    let mut _28: usize;
+    let mut _29: usize;
+    let mut _30: usize;
+    let mut _31: usize;
+    let mut _32: bool;
+    let mut _33: *const ();
+    let mut _34: usize;
+    let mut _35: usize;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: bool;
+    scope 1 {
+        debug nums => _1;
+        let mut _7: i32;
+        scope 2 {
+            debug ans => _7;
+            let mut _9: std::vec::IntoIter<i32>;
+            let _18: &i32;
+            let _19: &i32;
+            scope 3 {
+                debug iter => _9;
+                let _13: i32;
+                scope 4 {
+                    debug num => _13;
+                }
+            }
+            scope 5 {
+                debug left_val => _18;
+                debug right_val => _19;
+                let _23: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _23;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = SizeOf([i32; 10]);
+        _4 = AlignOf([i32; 10]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [i32; 10]);
+        _26 = copy ((_6.0: std::ptr::Unique<[i32; 10]>).0: std::ptr::NonNull<[i32; 10]>) as *const [i32; 10] (Transmute);
+        _27 = copy _26 as *const () (PtrToPtr);
+        _28 = copy _27 as usize (Transmute);
+        _29 = AlignOf([i32; 10]);
+        _30 = Sub(copy _29, const 1_usize);
+        _31 = BitAnd(copy _28, copy _30);
+        _32 = Eq(copy _31, const 0_usize);
+        assert(copy _32, "misaligned pointer dereference: address must be a multiple of {} but is {}", copy _29, copy _28) -> [success: bb15, unwind unreachable];
+    }
+
+    bb2: {
+        _7 = const 0_i32;
+        _8 = <Vec<i32> as IntoIterator>::into_iter(move _1) -> [return: bb3, unwind continue];
+    }
+
+    bb3: {
+        _9 = move _8;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _11 = &mut _9;
+        _10 = <std::vec::IntoIter<i32> as Iterator>::next(copy _11) -> [return: bb5, unwind: bb13];
+    }
+
+    bb5: {
+        _12 = discriminant(_10);
+        switchInt(move _12) -> [0: bb8, 1: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _13 = copy ((_10 as Some).0: i32);
+        _14 = AddWithOverflow(copy _7, copy _13);
+        assert(!move (_14.1: bool), "attempt to compute `{} + {}`, which would overflow", copy _7, copy _13) -> [success: bb9, unwind: bb13];
+    }
+
+    bb8: {
+        drop(_9) -> [return: bb10, unwind continue];
+    }
+
+    bb9: {
+        _7 = move (_14.0: i32);
+        goto -> bb4;
+    }
+
+    bb10: {
+        _16 = &_7;
+        _17 = const main::promoted[0];
+        _15 = (move _16, move _17);
+        _18 = copy (_15.0: &i32);
+        _19 = copy (_15.1: &i32);
+        _21 = copy (*_18);
+        _22 = copy (*_19);
+        _20 = Eq(move _21, move _22);
+        switchInt(move _20) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        return;
+    }
+
+    bb12: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<i32, i32>(move _23, copy _18, copy _19, move _25) -> unwind continue;
+    }
+
+    bb13 (cleanup): {
+        drop(_9) -> [return: bb14, unwind terminate(cleanup)];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+
+    bb15: {
+        _33 = copy _26 as *const () (PtrToPtr);
+        _34 = copy _33 as usize (Transmute);
+        _35 = SizeOf([i32; 10]);
+        _36 = Ne(copy _35, const 0_usize);
+        _37 = Eq(copy _34, const 0_usize);
+        _38 = BitAnd(copy _37, copy _36);
+        _39 = Not(copy _38);
+        assert(copy _39, "null pointer dereference occurred") -> [success: bb16, unwind unreachable];
+    }
+
+    bb16: {
+        (*_26) = [const 1_i32, const 2_i32, const 3_i32, const 4_i32, const 5_i32, const 6_i32, const 7_i32, const 8_i32, const 9_i32, const 10_i32];
+        _2 = move _6 as std::boxed::Box<[i32]> (PointerCoercion(Unsize, Implicit));
+        _1 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _2) -> [return: bb2, unwind continue];
+    }
+}
+
+const main::promoted[0]: &i32 = {
+    let mut _0: &i32;
+    let mut _1: i32;
+
+    bb0: {
+        _1 = const 55_i32;
+        _0 = &_1;
+        return;
+    }
+}

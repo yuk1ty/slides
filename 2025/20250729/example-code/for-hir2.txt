@@ -1,0 +1,32 @@
+#[prelude_import]
+use std::prelude::rust_2024::*;
+#[macro_use]
+extern crate std;
+fn main() {
+    let nums =
+        <[_]>::into_vec(::alloc::boxed::box_new([1, 2, 3, 4, 5, 6, 7, 8, 9,
+                        10]));
+    let mut ans = 0;
+    {
+        let _t =
+            match #[lang = "into_iter"](nums) {
+                mut iter =>
+                    loop {
+                        match #[lang = "next"](&mut iter) {
+                            #[lang = "None"] {} => break,
+                            #[lang = "Some"] {  0: num } => { ans += num; }
+                        }
+                    },
+            };
+        _t
+    };
+    match (&ans, &55) {
+        (left_val, right_val) => {
+            if !(*left_val == *right_val) {
+                let kind = ::core::panicking::AssertKind::Eq;
+                ::core::panicking::assert_failed(kind, &*left_val,
+                    &*right_val, ::core::option::Option::None);
+            }
+        }
+    };
+}

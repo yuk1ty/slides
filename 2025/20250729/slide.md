@@ -121,3 +121,209 @@ cargo rustc -- -Z unpretty=hir-tree
 cargo rustc -- -Z unpretty=hir
 cargo rustc -- -Z unpretty=thir-tree
 ```
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: HIR
+
+試しに下記のようなコードをHIRとして出力させてみる。
+
+```rust
+fn main() {
+    let nums = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let mut ans = 0;
+    for num in nums {
+        ans += num;
+    }
+    assert_eq!(ans, 55);
+}
+```
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: HIR
+
+本来のHIR自体はこのようにASTに近しい形だが、少し読みにくいのでRustコードに近い形式で出力させる。
+
+```
+DefId(0:0 ~ for_hir[8e24]) => OwnerNodes {
+    node: ParentedNode {
+        parent: 4294967040,
+        node: Crate(
+            Mod {
+                spans: ModSpans {
+                    inner_span: src/bin/for_hir.rs:1:1: 8:2 (#0),
+                    inject_use_span: no-location (#0),
+                },
+                item_ids: [
+                    ItemId {
+                        owner_id: DefId(0:1 ~ for_hir[8e24]::{use#0}),
+                    },
+                    ItemId {
+                        owner_id: DefId(0:2 ~ for_hir[8e24]::std),
+                    },
+
+```
+
+---
+
+すると、for式がmatch, loop, matchの形式で変換されていることを確認できる。
+
+```rust
+// ...
+fn main() {
+    let nums =
+        <[_]>::into_vec(::alloc::boxed::box_new([1, 2, 3, 4, 5, 6, 7, 8, 9,
+                        10]));
+    let mut ans = 0;
+    {
+        let _t =
+            match #[lang = "into_iter"](nums) {
+                mut iter =>
+                    loop {
+                        match #[lang = "next"](&mut iter) {
+                            #[lang = "None"] {} => break,
+                            #[lang = "Some"] {  0: num } => { ans += num; }
+                        }
+                    },
+            };
+        _t
+    };
+    match (&ans, &55) {
+        (left_val, right_val) => {
+            if !(*left_val == *right_val) {
+                let kind = ::core::panicking::AssertKind::Eq;
+                ::core::panicking::assert_failed(kind, &*left_val,
+                    &*right_val, ::core::option::Option::None);
+            }
+        }
+    };
+}
+```
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: MIR
+
+- THIRからMIR（Mid-level Intermediate Representation）が生成される。
+- MIRはRustコンパイラの根幹をなす中間表現である。主には制御フローグラフに基づいた中間表現になっており、型付けもなされた状態である。
+- たとえば下記が含まれる。
+  - ボローチェック（Borrow Check）。
+  - 単相化（Monomorphization）。
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: MIR
+
+MIRは、次のcargoコマンドで出力できる。
+
+```
+cargo rustc -- -Z unpretty=mir 
+```
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: MIR
+
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: MIR
+
+HIRで使用したのと同じコードを使ってMIRを出力させてみると、次のような出力を見ることができる。
+
+```
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<i32>;
+// ...
+    bb1: {
+        _6 = ShallowInitBox(move _5, [i32; 10]);
+        _26 = copy ((_6.0: std::ptr::Unique<[i32; 10]>).0: std::ptr::NonNull<[i32; 10]>) as *const [i32; 10] (Transmute);
+        _27 = copy _26 as *const () (PtrToPtr);
+        _28 = copy _27 as usize (Transmute);
+        _29 = AlignOf([i32; 10]);
+        _30 = Sub(copy _29, const 1_usize);
+        _31 = BitAnd(copy _28, copy _30);
+        _32 = Eq(copy _31, const 0_usize);
+        assert(copy _32, "misaligned pointer dereference: address must be a multiple of {} but is {}", copy _29, copy _28) -> [success: bb15, unwind unreachable];
+    }
+```
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: MIR
+
+ポイントは下記の通り。
+
+- `bbX`, `scope X`のような記述
+- `move`や`copy`、`drop`など、ボローチェッカーに関連する記述を確認できる。
+- `return`や`goto`、`unreachable`など、制御フローに関係しそうなものを確認できる。
+
+---
+
+## Rustコンパイラの構成と特徴
+### bbX, scope X
+
+- `scope`: 軸解析後のソースコードのスコープ構造を表現する。
+
+```
+            scope 3 {
+                debug iter => _9;
+                let _13: i32;
+                scope 4 {
+                    debug num => _13;
+                }
+            }
+
+```
+
+- `bb`: Basic Blocksの略で、制御フローグラフの一単位を示す。（`_3`などは、MIRの一番上で定義されている変数情報を指している）
+
+```
+    bb0: {
+        _3 = SizeOf([i32; 10]);
+        _4 = AlignOf([i32; 10]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> [return: bb1, unwind continue];
+    }
+```
+
+---
+
+## Rustコンパイラの構成と特徴
+### move, copy, drop
+
+- その値がmoveするのか、copyするのか、そこでdropするのかを示している。
+
+```
+    bb3: {
+        _9 = move _8;
+        goto -> bb4;
+    }
+```
+
+---
+
+## Rustコンパイラの構成と特徴
+### 実際の中間表現を少し読んでみる
+
+（時間があれば。なければ飛ばす予定です。）
+
+---
+
+## Rustコンパイラの構成と特徴
+### 全体的な構成: LLVM IR（Codegen）
+
+- MIRからLLVM IRが生成される。バイナリが生成される直前のフェーズであると言える。
+- バイナリの生成までにはさらにいくつかのステップを経るが、詳しくは下記の記事を参考にできる。
+  - Resolving Rust Symbols: https://blog.shrirambalaji.com/posts/resolving-rust-symbols/
+  - ちなみに、この記事の著者は昨年Rust.Tokyoに登壇してくれた。
+
+---
