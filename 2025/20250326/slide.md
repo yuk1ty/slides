@@ -417,10 +417,10 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 
 ## その他気になった Project の紹介
 
-- Continue resolving cargo-semver-checks blockers for merging into cargo
+- cargo-semver-check の本体入り
 - Publish first version of StableMIR on crates.io
-- Optimizing Clippy & linting
-- Next-generation trait solver
+- clippy の高速化
+- 次世代トレイトリゾルバー
 
 ---
 
@@ -454,39 +454,20 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 ### Publish first version of StableMIR on crates.io
 
 - stable-mir というクレートを作ろうというプロジェクト。
-  - MIR は Rust コンパイラの中間表現で、主にはボローチェッカーの情報が表現されている。
+  - MIR は Rust コンパイラの中間表現で、主にはライフタイムくらいまでが明示された表現にあたる。
   - https://github.com/rust-lang/project-stable-mir
 - 意義みたいなもの
   - Kani のような形式検証のツールで、Rust コンパイラを依存に全部含まずとも stable-mir クレートだけ入れればよくなる。
-  - Kani のようなツールでは、Rust のコンパイラに変更が入ると Kani も修正する必要があった。ここが疎結合になる。
   - こうした Rust プログラムに対する形式検証ツールは、MIR さえ読めればプログラムの正しさを評価できるようになるため。
   - こうした安全性検証のツール周りの発展に寄与する可能性がある。
+  - (あとでファクトチェックなど要検討)
 
 ---
 
 ## その他気になった Project の紹介
 
-### Next-generation trait solver
+### clippy の高速化
 
-- 現状は cargo check の 2.5 倍の時間がかかる状態である。
+- 現状は cargo check の2.5倍の時間がかかる状態である。
 - これを高速化する。
 - たしかに遅く感じ、私も rust-analyzer ではオフにしているので期待している。
-
----
-
-## その他気になった Project の紹介
-
-### Next-generation trait solver
-
-- 主にはトレイト解決の機構の実装を大幅に簡略化し、関連するいくつかのバグを解消することを念頭に置いている。
-  - （もうちょっと埋める）
-- 意義
-  - キャッシュの保持の仕方やエラー機構の改善も含まれるため、これによりパフォーマンスの向上が見込める。
-- Rust コアコミッターが解説する言語の最新情報 〜Rust の新しい Trait ソルバをのぞいてみる〜: https://findy-code.io/engineer-lab/dev-updates-rust-trait
-
----
-
-## まとめ
-
-- Project Goals を見ると、Rust がどこを目指しているのかがよくわかる。
-- 半年に 1 回改訂される上に、ユーザーからの投稿も受け付けていそうなので、興味がある方がいればぜひ。
