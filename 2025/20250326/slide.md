@@ -13,6 +13,16 @@ Rust 開発最前線 - yuki さんと 2025 年の最新トレンドを学ぶ @ F
 
 ---
 
+## 今日の発表の意義
+
+- 2024 Edition 以降の Rust を知る。
+- 余談ですが…
+  - 最近は NotebookLM とかに資料を突っ込んで聞いた方が早いかもしれない。
+  - 一応キュレーションをしはするが、参考資料を貼っておいたのでぜひ、ご自身で NotebookLM などにいろいろインポートして質問してみてほしい。
+  - このあとの LT や懇親会も楽しんでいきましょう！🫰🏻
+
+---
+
 ## 目次
 
 1. 自己紹介
@@ -34,6 +44,20 @@ Rust 開発最前線 - yuki さんと 2025 年の最新トレンドを学ぶ @ F
 
 ---
 
+## 自己紹介
+
+### 最近のわたしと Rust
+
+- 業務では書いていないが、業務・プライベート含め変なツールを作っている。
+  - ローカルマシンに設定した git のユーザーを切り替えられるツール: https://github.com/yuk1ty/guswitch
+  - 業務ではデータベースプロキシの選択をできる便利ツールを Rust で作った。
+  - たのしい 🫶🏻
+- 社内で Rust の勉強会を開いている。
+  - 100 Exercises To Learn Rust: https://rust-exercises.com/100-exercises/
+- OSS やりたいけど、仕事と育児<s>とモンハン</s>をしていたら時間が毎日溶けていく。
+
+---
+
 ## 昨今の Rust の動き
 
 - Rust 1.85.0 がリリースされた。現在の Rust は 2024 Edition となった。
@@ -45,7 +69,8 @@ Rust 開発最前線 - yuki さんと 2025 年の最新トレンドを学ぶ @ F
 
 ### 2024 Edition
 
-- いくつかの便利な機能が入った。
+- 微妙に奇妙に見えたり整合性のない挙動の修正が入ったり、新しい予約語が増えたりした。
+- 詳しくはこちらのドキュメント: https://doc.rust-lang.org/edition-guide/rust-2024/index.html
 
 ---
 
@@ -255,7 +280,7 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 
 - Rust で書いていくことで、カーネル開発を「人間工学的に良い状態 (ergonomic)」にしたい。
 - Rust でカーネルを書くと、いくつものバグを未然に防ぐことができる。安全性に貢献できる。
-- (あとでちゃんと調べて書く)
+- など。
 
 ---
 
@@ -265,8 +290,8 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 
 - ABI modifier コンパイルフラグの安定化
 - build-std の安定化
-- doctest 関係の機能の安定化
 - clippy の整備
+- など。
 
 ---
 
@@ -287,6 +312,8 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 ### Rust for Linux に向けた開発
 
 - ABI modifier コンパイラフラグの安定化
+  - RFC 3716 に関連するもの。この RFC では target modifier という概念を導入し、リンク時に特定の条件下で UB を引き起こしうるコンパイラフラグを安全に管理できることを目的としたもの。
+  - ABI を変えるようなコンパイラフラグを正しく設定しきれないと、リンクするタイミングで ABI 不整合が生じることがある。これが厄介。
 
 ---
 
@@ -299,20 +326,6 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
   - std, core, alloc を再ビルドする際に使えるフラグ。
   - たとえば標準ライブラリの features=backtrace をオフにしたいなどのケースで使える。
   - Linux 開発ではこうしたビルドパラメータのカスタマイズがいくつか必要。
-
----
-
-## 2025H1 の Flagship Goals を知る > Rust for Linux
-
-### Rust for Linux に向けた開発
-
-- doctests 関連の機能の安定化
-  - 現状は doctests の結果の生成に下記のコマンドで実行しているが、`-Zunstable-options`の利用が求められる。
-  ```
-  $ rustdoc +nightly --no-run --test-builder[path] -Zunstable-options
-  ```
-  - Rust 1.86.0 で`--output-format=doctest`が投入され、解決される。
-  - (ちょっとまだ調査不足かも)
 
 ---
 
@@ -342,6 +355,7 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 
 - 「Stabilize tooling needed by Rust for Linux」: https://rust-lang.github.io/rust-project-goals/2025h1/rfl.html
 - RFL で使いたいがまだ安定化されていない機能がまとまった Issue: https://github.com/Rust-for-Linux/linux/issues/2
+- [RFC] Target Modifiers: https://github.com/rust-lang/rfcs/pull/3716
 - build-std の現状: https://hackmd.io/@adamgemmell/rybJRFvdJe
 - doctests 関連の議事録: https://hackmd.io/vcnuZEpqQaaVNVZZmTFyIA?view#rustdoc-a-way-to-extract-doctests
 - 「Miguel Ojeda (Rust for Linux): KEYNOTE | RustConf 2024」: https://youtu.be/FRMJzNYut4g?si=WRmx-lnvoA3LKUW3
@@ -387,7 +401,7 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
 ## その他気になった Project の紹介
 
 - cargo-semver-check の本体入り
-- StableMIR を作る
+- Publish first version of StableMIR on crates.io
 - clippy の高速化
 - 次世代トレイトリゾルバー
 
@@ -414,3 +428,47 @@ https://rust-lang.github.io/wg-async/vision/submitted_stories/status_quo.html
   - ルールを全部覚えておいて実装するのは無理に近い。ツールの力に頼るべき。
   - 「Semver violations are common, better tooling is the answer」: https://predr.ag/blog/semver-violations-are-common-better-tooling-is-the-answer/
   - 個人的には、ツールの本体入りと cargo-publish 入りはぜひやってほしい。
+
+---
+
+## その他気になった Project の紹介
+
+### Publish first version of StableMIR on crates.io
+
+- stable-mir というクレートを作ろうというプロジェクト。
+  - MIR は Rust コンパイラの中間表現で、主にはライフタイムくらいまでが明示された表現にあたる。
+  - https://github.com/rust-lang/project-stable-mir
+- 意義みたいなもの
+  - Kani のような形式検証のツールで、Rust コンパイラを依存に全部含まずとも stable-mir クレートだけ入れればよくなる。
+  - こうした Rust プログラムに対する形式検証ツールは、MIR さえ読めればプログラムの正しさを評価できるようになるため。
+  - こうした安全性検証のツール周りの発展に寄与する可能性がある。
+  - (あとでファクトチェックなど要検討)
+
+---
+
+## その他気になった Project の紹介
+
+### clippy の高速化
+
+- 現状は cargo check の 2.5 倍の時間がかかる状態である。
+- これを高速化する。
+- たしかに遅く感じ、私も rust-analyzer ではオフにしているので期待している。
+
+---
+
+## その他気になった Project の紹介
+
+### 次世代トレイトリゾルバー
+
+- 主にはトレイト解決の機構の実装を大幅に簡略化し、関連するいくつかのバグを解消することを念頭に置いている。
+  - （もうちょっと埋める）
+- 意義
+  - キャッシュの保持の仕方やエラー機構の改善も含まれるため、これによりパフォーマンスの向上が見込める。
+- Rust コアコミッターが解説する言語の最新情報 〜Rust の新しい Trait ソルバをのぞいてみる〜: https://findy-code.io/engineer-lab/dev-updates-rust-trait
+
+---
+
+## まとめ
+
+- Project Goals を見ると、Rust がどこを目指しているのかがよくわかる。
+- 半年に 1 回改訂される上に、ユーザーからの投稿も受け付けていそうなので、興味がある方がいればぜひ。
