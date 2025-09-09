@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: rose-pine-custom
+theme: rose-pine
 paginate: true
 ---
 
@@ -124,14 +124,6 @@ Rustコンパイラ内では、大まかには次のように「中間表現（I
 
 ### 全体的な構成: HIR
 
-（コードからHIRを出力してみた例を出す）
-
----
-
-## Rustコンパイラの構成と特徴
-
-### 全体的な構成: HIR
-
 HIRは、次のcargoコマンドで確認できる。
 
 ```
@@ -177,14 +169,6 @@ DefId(0:0 ~ for_hir[8e24]) => OwnerNodes {
                     inner_span: src/bin/for_hir.rs:1:1: 8:2 (#0),
                     inject_use_span: no-location (#0),
                 },
-                item_ids: [
-                    ItemId {
-                        owner_id: DefId(0:1 ~ for_hir[8e24]::{use#0}),
-                    },
-                    ItemId {
-                        owner_id: DefId(0:2 ~ for_hir[8e24]::std),
-                    },
-
 ```
 
 ---
@@ -253,13 +237,7 @@ cargo rustc -- -Z unpretty=mir
 
 ### 全体的な構成: MIR
 
----
-
-## Rustコンパイラの構成と特徴
-
-### 全体的な構成: MIR
-
-HIRで使用したのと同じコードを使ってMIRを出力させてみると、次のような出力を見ることができる。
+HIRで使用したのと同じコードを使ってMIRを出力させてみると、次のような出力を見ることができる。`copy`などの文字列が見られる。
 
 ```
 fn main() -> () {
@@ -276,62 +254,6 @@ fn main() -> () {
         _31 = BitAnd(copy _28, copy _30);
         _32 = Eq(copy _31, const 0_usize);
         assert(copy _32, "misaligned pointer dereference: address must be a multiple of {} but is {}", copy _29, copy _28) -> [success: bb15, unwind unreachable];
-    }
-```
-
----
-
-## Rustコンパイラの構成と特徴
-
-### 全体的な構成: MIR
-
-ポイントは下記の通り。
-
-- `bbX`, `scope X`のような記述
-- `move`や`copy`、`drop`など、ボローチェッカーに関連する記述を確認できる。
-- `return`や`goto`、`unreachable`など、制御フローに関係しそうなものを確認できる。
-
----
-
-## Rustコンパイラの構成と特徴
-
-### bbX, scope X
-
-- `scope`: 軸解析後のソースコードのスコープ構造を表現する。
-
-```
-            scope 3 {
-                debug iter => _9;
-                let _13: i32;
-                scope 4 {
-                    debug num => _13;
-                }
-            }
-
-```
-
-- `bb`: Basic Blocksの略で、制御フローグラフの一単位を示す。（`_3`などは、MIRの一番上で定義されている変数情報を指している）
-
-```
-    bb0: {
-        _3 = SizeOf([i32; 10]);
-        _4 = AlignOf([i32; 10]);
-        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> [return: bb1, unwind continue];
-    }
-```
-
----
-
-## Rustコンパイラの構成と特徴
-
-### move, copy, drop
-
-- その値がmoveするのか、copyするのか、そこでdropするのかを示している。
-
-```
-    bb3: {
-        _9 = move _8;
-        goto -> bb4;
     }
 ```
 
