@@ -38,6 +38,7 @@ Nextbeat Tech Bar：第七回関数型プログラミング（仮）の会
 
 - 5分で細かく解説はできません！ごめんなさい。
 - 代わりに細かい解説を含む記事を書きました。この資料を手がかりにしつつも、気になる点があれば記事をご覧ください。
+  - Kotlinの「コンテクスト指向プログラミング」とは何か？: https://blog-dry.com/entry/2025/09/19/132623
 
 ---
 
@@ -53,7 +54,7 @@ fun foo(action: Actinable -> Unit): Unit
 
 ## Kotlinにおける高階関数と拡張関数
 
-また、拡張関数もある。特定の型に対して実装をあとから継ぎ足しできるイメージの機能。`<ターゲットオブジェクト>.関数名()`で実装する。
+また、拡張関数もある。特定の型に対して実装をあとから継ぎ足しできるイメージの機能。`<レシーバ>.関数名()`で実装する。
 
 ```kotlin
 // 拡張関数
@@ -149,7 +150,7 @@ suspend fun callCoroutine() {
 
 ## Context ParametersによるCOPの拡張
 
-- さらにKotlin 2.2.0なって、コンテクスト情報を伝播させられるContext Parametersという実験的な機能が実装された。
+- さらにKotlin 2.2.0になって、コンテクスト情報を伝播させられるContext Parametersという実験的な機能が実装された。
 - Scalaのimplicitsによく似ている。
 
 ---
@@ -187,6 +188,7 @@ fun main() {
 ## 型つきエラーハンドリング（Raise DSL）
 
 ```kotlin
+// 今回のコンテクスト
 interface Raise<E : Exception> {
     // 今回はエラーを単に送出するだけにする
     fun raise(error: E): Nothing = throw error
@@ -236,7 +238,7 @@ fun callRaiseDSL() {
 
 - Context ParametersのDesign Docでも言及があるが、いわゆる型クラスに近い概念と言える？
 - また、コンパイル時にコンテクストが十分かどうかを検査することから、Coeffects的だと言える。
-- Raise DSLはAlgebraic Effectsであると考えられる。
+- Raise DSLはAlgebraic Effectに似ている。
 
 など。
 
